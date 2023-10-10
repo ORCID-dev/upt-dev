@@ -66,13 +66,13 @@ jobs:
       uses: actions/upload-artifact@v3
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
-        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.short_sha }}
+        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.sha_short }}
         path: target/${{ matrix.target }}/release/upt
 
     - name: Upload binaries as artifacts
       uses: actions/upload-artifact@v3
       if: matrix.os == 'windows-latest'
       with:
-        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.short_sha }}.exe
+        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.sha_short }}.exe
         path: target/${{ matrix.target }}/release/upt
 
