@@ -42,6 +42,12 @@ jobs:
         override: true
         target: ${{ matrix.target }}
 
+    - name: Configures Binary stripping
+      run: |
+        mkdir -p .cargo
+        echo '[build]' >> .cargo/config.toml
+        echo 'rustflags = ["-C", "link-args=-s", "-C", "target-feature=+crt-static"]' >> .cargo/config.toml
+
 
 #     - name: Build
 #       run: cargo build --release --locked
@@ -52,36 +58,32 @@ jobs:
       with:
         use-cross: true
         command: build
-        args: --target ${{ matrix.target }} --release
+        args: --verbose --target ${{ matrix.target }} --release
 
-    - name: Strip binary
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      run: strip target/release/upt
-
-
-# - uses: actions/upload-artifact@v3
-#   with:
-#     name: my-artifact
-#     path: |
-#       path/output/bin/
-#       path/output/test-results
-#       !path/**/*.tmp
-# 
-
-#     - name: Upload binaries to release
-#       uses: svenstaro/upload-release-action@v1-release
+#     - name: Strip binary
 #       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-#       with:
-#         repo_token: ${{ secrets.GITHUB_TOKEN }}
-#         file: target/release/upt
-#         asset_name: upt-${{ matrix.target }}
-#         tag: ${{ github.ref }}
-# 
-#     - name: Upload binaries to release
-#       uses: svenstaro/upload-release-action@v1-release
-#       if: matrix.os == 'windows-latest'
-#       with:
-#         repo_token: ${{ secrets.GITHUB_TOKEN }}
-#         file: target/release/upt.exe
-#         asset_name: upt-${{ matrix.target }}.exe
-#         tag: ${{ github.ref }}
+#       run: strip target/release/upt
+
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: my-artifact
+        path: |
+          path/output/bin/
+          path/output/test-results
+          !path/**/*.tmp
+
+    - name: Upload binaries as artifacts
+      uses: actions/upload-artifact@v3
+      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+      with:
+        name: upt-${{ matrix.target }}-${{ github.ref }}
+        path: target/release/upt
+
+    - name: Upload binaries as artifacts
+      uses: actions/upload-artifact@v3
+      if: matrix.os == 'windows-latest'
+      with:
+        name: upt-${{ matrix.target }}-${{ github.ref }}.exe
+        path: target/release/upt
+
