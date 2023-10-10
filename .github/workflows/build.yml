@@ -63,12 +63,12 @@ jobs:
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
         name: upt-${{ matrix.target }}-${{ github.ref }}
-        path: target/release/upt
+        path: target/${{ matrix.target }}/release/upt
 
     - name: Upload binaries as artifacts
       uses: actions/upload-artifact@v3
       if: matrix.os == 'windows-latest'
       with:
         name: upt-${{ matrix.target }}-${{ github.ref }}.exe
-        path: target/release/upt
+        path: target/${{ matrix.target }}/release/upt
 
