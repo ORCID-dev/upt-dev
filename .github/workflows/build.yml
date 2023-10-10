@@ -55,9 +55,6 @@ jobs:
         command: build
         args: --verbose --target ${{ matrix.target }} --release
 
-    - name: debug
-      run: find /home/runner/work/upt-dev
-
     - name: Upload binaries as artifacts
       uses: actions/upload-artifact@v3
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
