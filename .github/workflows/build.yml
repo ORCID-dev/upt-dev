@@ -55,15 +55,12 @@ jobs:
         command: build
         args: --verbose --target ${{ matrix.target }} --release
 
-    - name: Set short git commit SHA
+    - name: generate git_sha short
       id: vars
-      run: |
-        calculatedSha=$(git rev-parse --short ${{ github.sha }})
-        echo "::set-output name=short_sha::$calculatedSha"
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-    - name: Confirm git commit SHA output
-      run: echo ${{ steps.vars.outputs.short_sha }}
-
+    - name: Check sha_short
+      run: echo "${{ steps.vars.outputs.sha_short }}"
 
     - name: Upload binaries as artifacts
       uses: actions/upload-artifact@v3
