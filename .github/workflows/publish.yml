@@ -45,20 +45,32 @@ jobs:
         override: true
         target: ${{ matrix.target }}
 
+    - name: Configures Binary stripping
+      run: |
+        mkdir -p .cargo
+        echo '[build]' >> .cargo/config.toml
+        echo 'rustflags = ["-C", "link-args=-s"]' >> .cargo/config.toml
 
     - name: Build
-      run: cargo build --release --locked
+      uses: actions-rs/cargo@v1
+      with:
+        use-cross: true
+        command: build
+        args: --verbose --target ${{ matrix.target }} --release
 
-    - name: Strip binary
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
-      run: strip target/release/upt
+    - name: generate git_sha short
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Check sha_short
+      run: echo "${{ steps.vars.outputs.sha_short }}"
 
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v1-release
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/upt
+        file: target/${{ matrix.target }}/release/upt
         asset_name: upt-${{ matrix.target }}
         tag: ${{ github.ref }}
 
@@ -67,6 +79,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/upt.exe
+        file: target/${{ matrix.target }}/release/upt.exe
         asset_name: upt-${{ matrix.target }}.exe
         tag: ${{ github.ref }}
+
