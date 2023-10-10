@@ -46,7 +46,7 @@ jobs:
       run: |
         mkdir -p .cargo
         echo '[build]' >> .cargo/config.toml
-        echo 'rustflags = ["-C", "link-args=-s", "-C", "target-feature=+crt-static"]' >> .cargo/config.toml
+        echo 'rustflags = ["-C", "link-args=-s"]' >> .cargo/config.toml
 
 
 #     - name: Build
