@@ -55,17 +55,27 @@ jobs:
         command: build
         args: --verbose --target ${{ matrix.target }} --release
 
+    - name: Set short git commit SHA
+      id: vars
+      run: |
+        calculatedSha=$(git rev-parse --short ${{ github.sha }})
+        echo "::set-output name=short_sha::$calculatedSha"
+
+    - name: Confirm git commit SHA output
+      run: echo ${{ steps.vars.outputs.short_sha }}
+
+
     - name: Upload binaries as artifacts
       uses: actions/upload-artifact@v3
       if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
       with:
-        name: upt-${{ matrix.target }}-${{ github.ref }}
+        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.short_sha }}
         path: target/${{ matrix.target }}/release/upt
 
     - name: Upload binaries as artifacts
       uses: actions/upload-artifact@v3
       if: matrix.os == 'windows-latest'
       with:
-        name: upt-${{ matrix.target }}-${{ github.ref }}.exe
+        name: upt-${{ matrix.target }}-${{ steps.vars.outputs.short_sha }}.exe
         path: target/${{ matrix.target }}/release/upt
 
